@@ -34,7 +34,7 @@ all commands, or `python ptk.py` for the interactive menu.
 - [Features](#features) · [Install (Termux)](#install-termux) · [Usage](#usage)
 - [Design principles](#design-principles) · [Out of scope](#deliberately-out-of-scope)
 - [Project layout](#project-layout) · [Contributing](#contributing)
-- [Branding](#branding) · [License](#license) · [Support this project](#-support-this-project)
+- [Branding](#branding) · [License](#license)
 
 ## Features
 
@@ -261,38 +261,43 @@ and the license terms, not by the code.
 
 [MIT](LICENSE) © BitCops (bitcops.net) / Zahid Hussain Shah
 
+<!-- SUPPORT SECTION HIDDEN FOR NOW.
+     To show it again, remove this opening comment marker and the closing one
+     at the end of the block, then fill in your own handles/addresses.
+
 ---
 
 ## 💖 Support this project
 
-PTK is free and open source, built and maintained by **[BitCops](https://bitcops.net)**.
+PTK is free and open source, built and maintained by **BitCops (bitcops.net)**.
 If it saves you time or you'd like to support continued development, a tip is
 hugely appreciated — thank you! 🙏
 
-> **Maintainer:** _add your name here_
-> **Website:** https://bitcops.net
-> **Contact:** _add your email / social here_
+Maintainer: _add your name here_
+Website: https://bitcops.net
+Contact: _add your email / social here_
 
 ### Ways to send a tip
 
-<!-- Fill in the links/addresses you want to use, then delete the ones you don't. -->
+(Fill in the links/addresses you want to use, then delete the ones you don't.)
 
 | Method | Details |
 |--------|---------|
-| ☕ Buy Me a Coffee | `https://buymeacoffee.com/your-handle` |
-| 💳 PayPal | `https://paypal.me/your-handle` |
-| 🅿️ Patreon | `https://patreon.com/your-handle` |
-| 🐙 GitHub Sponsors | `https://github.com/sponsors/Zahidhussainshah1` |
-| ₿ Bitcoin (BTC) | `your-btc-address` |
-| Ξ Ethereum (ETH) | `your-eth-address` |
-| 🔷 USDT (TRC20) | `your-usdt-address` |
-| 💵 Other | `your-preferred-method` |
+| Buy Me a Coffee | https://buymeacoffee.com/your-handle |
+| PayPal | https://paypal.me/your-handle |
+| Patreon | https://patreon.com/your-handle |
+| GitHub Sponsors | https://github.com/sponsors/Zahidhussainshah1 |
+| Bitcoin (BTC) | your-btc-address |
+| Ethereum (ETH) | your-eth-address |
+| USDT (TRC20) | your-usdt-address |
+| Other | your-preferred-method |
 
-You can also support the project for free by **starring ⭐ the repo**, sharing
-it, and reporting issues or contributing pull requests.
+You can also support the project for free by starring the repo, sharing it,
+and reporting issues or contributing pull requests.
 
-> ℹ️ **How to fill this in:** edit this section of `README.md`, replace the
-> placeholder handles/addresses above with your own, and delete any rows you
-> don't use. To enable the **Sponsor button** at the top of the GitHub repo,
-> also add a `.github/FUNDING.yml` file (see the commented template committed
-> alongside this README).
+To enable the Sponsor button at the top of the GitHub repo, also fill in the
+`.github/FUNDING.yml` file.
+-->
+<!-- END hidden support section -->
+
+
