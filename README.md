@@ -1,5 +1,7 @@
 # PTK — Pentest Toolkit for Termux
 
+**A [BitCops](https://bitcops.net) project · https://bitcops.net**
+
 An open-source, Python-based reconnaissance and information-gathering toolkit
 built to run on **Termux** (Android) as well as regular Linux/macOS. It bundles
 common recon tasks behind a single CLI with an interactive menu, an
@@ -195,6 +197,15 @@ ethical scope of the project (recon / assessment / defensive tooling — see
 "Deliberately out of scope" above) and preserve the authorization gate and
 logging conventions.
 
+## Branding
+
+PTK is a [BitCops](https://bitcops.net) project. The `bitcops.net` attribution
+is centralized in `ptk/core/brand.py` and shown on every run and in every
+exported report. Since this is open-source software, that attribution can be
+edited by anyone with the source — the runtime integrity check only guards
+against *accidental* removal. The brand name itself is protected by trademark
+and the license terms, not by the code.
+
 ## License
 
-[MIT](LICENSE) © Zahid Hussain Shah
+[MIT](LICENSE) © BitCops (bitcops.net) / Zahid Hussain Shah

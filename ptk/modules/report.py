@@ -4,7 +4,7 @@ import glob
 import json
 import os
 
-from ..core import colors
+from ..core import brand, colors
 from ..core.logger import log_dir
 
 
@@ -14,7 +14,9 @@ def _latest_results():
 
 
 def _render_markdown(results):
-    lines = ["# PTK Assessment Report", ""]
+    brand.verify()
+    lines = ["# PTK Assessment Report",
+             f"**{brand.VENDOR}** — {brand.URL}", ""]
     if results:
         lines.append(f"_Generated from {len(results)} recorded action(s)._")
         lines.append("")
@@ -28,7 +30,8 @@ def _render_markdown(results):
         lines.append("```")
         lines.append("")
     lines.append("---")
-    lines.append("_Report produced by PTK for authorized testing._")
+    lines.append(f"_Report produced by PTK — {brand.VENDOR} ({brand.URL}) — "
+                 f"for authorized testing._")
     return "\n".join(lines)
 
 

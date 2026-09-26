@@ -1,6 +1,6 @@
 """ASCII banner and legal notice."""
 
-from . import colors
+from . import brand, colors
 from .. import __version__
 
 BANNER = r"""
@@ -20,7 +20,11 @@ LEGAL = (
 
 
 def show():
+    # Re-assert canonical branding before displaying it.
+    brand.verify()
     print(colors.cyan(BANNER.format(ver=__version__)))
+    print(colors.bold(colors.magenta(f"  {brand.line()}")))
+    print(colors.dim(f"  {brand.TAGLINE}"))
     print()
     print(colors.yellow(LEGAL))
     print()
