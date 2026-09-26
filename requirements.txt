@@ -1,0 +1,7 @@
+# PTK runs on the Python standard library only — no pip packages required.
+#
+# Optional system tools give richer output (install via Termux `pkg`):
+#   dnsutils   -> provides `dig` for full DNS record recon
+#   whois      -> provides the `whois` binary for detailed WHOIS output
+#
+# The toolkit degrades gracefully (stdlib fallbacks) when these are absent.
