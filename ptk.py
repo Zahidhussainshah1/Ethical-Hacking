@@ -45,7 +45,7 @@ def build_parser():
                                 action="store_true", help=arg.help)
             else:
                 sp.add_argument(*_split_flag(arg.flag), dest=arg.name, type=arg.type,
-                                default=arg.default, help=arg.help)
+                                default=arg.default, required=arg.required, help=arg.help)
     return p
 
 

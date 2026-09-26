@@ -10,10 +10,11 @@ from typing import Callable, List, Optional
 
 from .core import utils
 from .modules import (
-    banner_grab, cors_check, dir_enum, dns_recon, encoder, hashgen, hashid,
-    host_discovery, http_headers, jwt_tool, netinfo, port_scan, report,
-    reverse_dns, robots_sitemap, subdomain_enum, tls_info, web_tech,
-    whois_lookup, wordlist_gen, zone_transfer,
+    banner_grab, cors_check, crtsh, dir_enum, dns_recon, dork, encoder,
+    hashcrack, hashgen, hashid, host_discovery, http_headers, http_methods,
+    ip_geo, jwt_tool, netinfo, port_scan, pwcheck, report, reverse_dns,
+    robots_sitemap, spider, subdomain_enum, subnet, tls_info, waf_detect,
+    wayback, web_tech, whois_lookup, wordlist_gen, zone_transfer,
 )
 
 
@@ -143,6 +144,48 @@ def _report(a, log):
     report.run(session=a.session, outfile=a.out, logger=log)
 
 
+def _crtsh(a, log):
+    log.record("crtsh", a.target, crtsh.run(a.target, logger=log))
+
+
+def _wayback(a, log):
+    log.record("wayback", a.target, wayback.run(a.target, limit=a.limit, logger=log))
+
+
+def _ipgeo(a, log):
+    log.record("ipgeo", a.target, ip_geo.run(a.target, logger=log))
+
+
+def _waf(a, log):
+    log.record("waf", a.target, waf_detect.run(a.target, timeout=a.timeout, logger=log))
+
+
+def _methods(a, log):
+    log.record("methods", a.target, http_methods.run(a.target, timeout=a.timeout, logger=log))
+
+
+def _spider(a, log):
+    log.record("spider", a.target,
+               spider.run(a.target, depth=a.depth, max_pages=a.max_pages,
+                          timeout=a.timeout, logger=log))
+
+
+def _dork(a, log):
+    dork.run(a.domain, logger=log)
+
+
+def _subnet(a, log):
+    log.record("subnet", a.cidr, subnet.run(a.cidr, logger=log))
+
+
+def _hashcrack(a, log):
+    hashcrack.run(a.hash, a.wordlist, algo=a.algo, logger=log)
+
+
+def _pwcheck(a, log):
+    pwcheck.run(a.password, logger=log)
+
+
 # --------------------------------------------------------------------------- #
 # Common argument builders
 # --------------------------------------------------------------------------- #
@@ -206,6 +249,26 @@ COMMANDS = [
             args=[_target("Host or URL"), Arg("wordlist", "-W/--wordlist", "wordlist path",
                                               prompt="Wordlist (blank=built-in)"),
                   _timeout(6.0), _workers(30)]),
+    Command("waf", "Web", "WAF detection/fingerprint", _waf, active=True,
+            args=[_target("Host or URL"), _timeout(8.0)]),
+    Command("methods", "Web", "Allowed HTTP methods (OPTIONS)", _methods, active=True,
+            args=[_target("Host or URL"), _timeout(8.0)]),
+    Command("spider", "Web", "Shallow same-domain crawler", _spider, active=True,
+            args=[_target("Host or URL"),
+                  Arg("depth", "-d/--depth", "crawl depth", int, 1, prompt="Depth (blank=1)"),
+                  Arg("max_pages", "-m/--max-pages", "max pages", int, 40),
+                  _timeout(8.0)]),
+
+    # -- OSINT (passive) ---------------------------------------------------
+    Command("crtsh", "OSINT", "Subdomains from Certificate Transparency", _crtsh,
+            args=[_target("Domain")]),
+    Command("wayback", "OSINT", "Historical URLs from the Wayback Machine", _wayback,
+            args=[_target("Domain"),
+                  Arg("limit", "-l/--limit", "max URLs", int, 500)]),
+    Command("ipgeo", "OSINT", "IP geolocation / ASN lookup", _ipgeo,
+            args=[_target("Host or IP")]),
+    Command("dork", "OSINT", "Generate search-engine dorks", _dork,
+            args=[Arg("domain", None, "domain", prompt="Domain")]),
 
     # -- Utilities (offline) ----------------------------------------------
     Command("hashid", "Utility", "Identify a hash type", _hashid,
@@ -223,6 +286,16 @@ COMMANDS = [
             args=[Arg("keywords", None, "comma/space separated keywords", prompt="Keywords"),
                   Arg("out", "-o/--out", "output file", prompt="Output file (blank=print)"),
                   Arg("no_leet", "--no-leet", "disable leet variants", bool, False)]),
+    Command("subnet", "Utility", "Subnet / CIDR calculator", _subnet,
+            args=[Arg("cidr", None, "e.g. 10.0.0.0/24", prompt="CIDR")]),
+    Command("pwcheck", "Utility", "Password strength analyzer", _pwcheck,
+            args=[Arg("password", None, "password to analyze", prompt="Password")]),
+    Command("hashcrack", "Utility", "Offline dictionary attack on a hash", _hashcrack,
+            args=[Arg("hash", None, "target hash", prompt="Hash"),
+                  Arg("wordlist", "-W/--wordlist", "wordlist path", required=True,
+                      prompt="Wordlist path"),
+                  Arg("algo", "-a/--algo", "force algo (md5/sha1/sha256/...)",
+                      prompt="Algo (blank=auto)")]),
 
     # -- Reporting ---------------------------------------------------------
     Command("report", "Reporting", "Export Markdown report from session results", _report,

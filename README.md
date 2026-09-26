@@ -1,11 +1,24 @@
-# PTK — Pentest Toolkit for Termux
+# PTK — Termux Pentest Toolkit | No-Root Penetration Testing & Recon Tool for Android
 
 **A [BitCops](https://bitcops.net) project · https://bitcops.net**
 
-An open-source, Python-based reconnaissance and information-gathering toolkit
-built to run on **Termux** (Android) as well as regular Linux/macOS. It bundles
-common recon tasks behind a single CLI with an interactive menu, an
-authorization gate, and per-session logging.
+![Platform](https://img.shields.io/badge/platform-Termux%20%7C%20Android%20%7C%20Linux%20%7C%20macOS-informational)
+![Python](https://img.shields.io/badge/python-3.7%2B-blue)
+![No Root](https://img.shields.io/badge/root-not%20required-success)
+![Dependencies](https://img.shields.io/badge/pip%20dependencies-none-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-green)
+
+> **PTK** is an open-source **penetration testing and reconnaissance toolkit for
+> Termux** — a mobile-first, no-root **ethical hacking tool** that runs on
+> Android, Linux, and macOS. It bundles **30+ security tools** (port scanner,
+> subdomain enumeration, DNS recon, WHOIS, TLS/SSL inspector, web technology
+> fingerprinting, directory brute-forcing, WAF detection, OSINT, hashing, and
+> more) behind a single CLI with an interactive menu, an authorization gate, and
+> per-session logging — with **zero pip dependencies**.
+
+**Keywords:** termux pentest tool · termux hacking tools · penetration testing
+toolkit · no root pentest · android ethical hacking · recon tool · OSINT ·
+bug bounty · subdomain enumeration · port scanner · information gathering.
 
 > ⚠️ **For authorized security testing and education only.**
 > Only use PTK against systems you own or have **explicit written permission**
@@ -15,6 +28,13 @@ authorization gate, and per-session logging.
 Every tool is **unprivileged** — no root required — so the whole kit runs on a
 stock Termux install (or any Linux/macOS shell). Run `python ptk.py list` to see
 all commands, or `python ptk.py` for the interactive menu.
+
+## Table of contents
+
+- [Features](#features) · [Install (Termux)](#install-termux) · [Usage](#usage)
+- [Design principles](#design-principles) · [Out of scope](#deliberately-out-of-scope)
+- [Project layout](#project-layout) · [Contributing](#contributing)
+- [Branding](#branding) · [License](#license) · [Support this project](#-support-this-project)
 
 ## Features
 
@@ -47,16 +67,31 @@ all commands, or `python ptk.py` for the interactive menu.
 | `robots`  | Fetches & parses robots.txt and sitemap.xml                | active |
 | `cors`    | CORS misconfiguration checks (origin reflection, null)     | active |
 | `dirs`    | Content/directory discovery from a wordlist                | active |
+| `waf`     | Web Application Firewall detection / fingerprinting        | active |
+| `methods` | Enumerate allowed HTTP methods (OPTIONS), flags risky ones | active |
+| `spider`  | Shallow same-domain crawler for link/endpoint discovery    | active |
+
+**OSINT (passive — queries third-party data, not the target)**
+
+| Command   | What it does                                               | Type    |
+|-----------|------------------------------------------------------------|---------|
+| `crtsh`   | Subdomain discovery from Certificate Transparency (crt.sh) | passive |
+| `wayback` | Historical URLs from the Wayback Machine                   | passive |
+| `ipgeo`   | IP geolocation + ISP/ASN lookup                            | passive |
+| `dork`    | Generate ready-to-paste search-engine dorks                | offline |
 
 **Utilities (offline — no network)**
 
-| Command    | What it does                                              |
-|------------|-----------------------------------------------------------|
-| `hashid`   | Identify likely hash type by format/length                |
-| `hashgen`  | Generate MD5/SHA-1/224/256/384/512 digests of a string    |
-| `encode`   | Encode/decode base64, base32, hex, url, rot13             |
-| `jwt`      | Decode & inspect a JWT (flags `alg=none`, expiry, HS*)    |
-| `wordlist` | Generate a targeted wordlist (case/leet/suffix variants)  |
+| Command     | What it does                                              |
+|-------------|-----------------------------------------------------------|
+| `hashid`    | Identify likely hash type by format/length                |
+| `hashgen`   | Generate MD5/SHA-1/224/256/384/512 digests of a string    |
+| `encode`    | Encode/decode base64, base32, hex, url, rot13             |
+| `jwt`       | Decode & inspect a JWT (flags `alg=none`, expiry, HS*)    |
+| `wordlist`  | Generate a targeted wordlist (case/leet/suffix variants)  |
+| `subnet`    | Subnet / CIDR calculator (network, hosts, broadcast)      |
+| `pwcheck`   | Password strength / entropy analyzer                      |
+| `hashcrack` | Offline dictionary attack on an unsalted hash (you supply hash + wordlist) |
 
 **Reporting**
 
@@ -132,7 +167,16 @@ python ptk.py webtech https://example.com
 python ptk.py robots https://example.com
 python ptk.py cors https://api.example.com
 python ptk.py dirs https://example.com -W paths.txt
+python ptk.py waf https://example.com
+python ptk.py methods https://example.com
+python ptk.py spider https://example.com -d 2
 python ptk.py whois example.com
+
+# OSINT (passive)
+python ptk.py crtsh example.com                # subdomains from CT logs
+python ptk.py wayback example.com
+python ptk.py ipgeo 8.8.8.8
+python ptk.py dork example.com
 
 # offline utilities
 python ptk.py hashid 5f4dcc3b5aa765d61d8327deb882cf99
@@ -140,6 +184,9 @@ python ptk.py hashgen "some string"
 python ptk.py encode base64 "hello"            # add -d to decode
 python ptk.py jwt eyJhbGciOi...
 python ptk.py wordlist "acme,admin,2025" -o custom.txt
+python ptk.py subnet 10.0.0.0/24
+python ptk.py pwcheck "S0me-Passw0rd!"
+python ptk.py hashcrack 5f4dcc3b5aa765d61d8327deb882cf99 -W rockyou.txt
 
 # turn this session's results into a Markdown report
 python ptk.py report
@@ -169,12 +216,16 @@ ptk/
     http.py                # shared stdlib HTTP helper
     logger.py              # per-session audit log + JSON results
     utils.py               # target parsing, validation, port specs
-  modules/                 # one file per tool (network / dns / web / utility)
+  modules/                 # one file per tool (network / dns / web / osint / utility)
     port_scan.py  host_discovery.py  banner_grab.py  netinfo.py
     dns_recon.py  subdomain_enum.py  reverse_dns.py  zone_transfer.py  whois_lookup.py
     http_headers.py  tls_info.py  web_tech.py  robots_sitemap.py  cors_check.py  dir_enum.py
+    waf_detect.py  http_methods.py  spider.py
+    crtsh.py  wayback.py  ip_geo.py  dork.py
     hashid.py  hashgen.py  encoder.py  jwt_tool.py  wordlist_gen.py
+    subnet.py  pwcheck.py  hashcrack.py
     report.py
+  core/brand.py            # centralized BitCops / bitcops.net branding
 install.sh                 # Termux installer
 ```
 
@@ -209,3 +260,39 @@ and the license terms, not by the code.
 ## License
 
 [MIT](LICENSE) © BitCops (bitcops.net) / Zahid Hussain Shah
+
+---
+
+## 💖 Support this project
+
+PTK is free and open source, built and maintained by **[BitCops](https://bitcops.net)**.
+If it saves you time or you'd like to support continued development, a tip is
+hugely appreciated — thank you! 🙏
+
+> **Maintainer:** _add your name here_
+> **Website:** https://bitcops.net
+> **Contact:** _add your email / social here_
+
+### Ways to send a tip
+
+<!-- Fill in the links/addresses you want to use, then delete the ones you don't. -->
+
+| Method | Details |
+|--------|---------|
+| ☕ Buy Me a Coffee | `https://buymeacoffee.com/your-handle` |
+| 💳 PayPal | `https://paypal.me/your-handle` |
+| 🅿️ Patreon | `https://patreon.com/your-handle` |
+| 🐙 GitHub Sponsors | `https://github.com/sponsors/Zahidhussainshah1` |
+| ₿ Bitcoin (BTC) | `your-btc-address` |
+| Ξ Ethereum (ETH) | `your-eth-address` |
+| 🔷 USDT (TRC20) | `your-usdt-address` |
+| 💵 Other | `your-preferred-method` |
+
+You can also support the project for free by **starring ⭐ the repo**, sharing
+it, and reporting issues or contributing pull requests.
+
+> ℹ️ **How to fill this in:** edit this section of `README.md`, replace the
+> placeholder handles/addresses above with your own, and delete any rows you
+> don't use. To enable the **Sponsor button** at the top of the GitHub repo,
+> also add a `.github/FUNDING.yml` file (see the commented template committed
+> alongside this README).
