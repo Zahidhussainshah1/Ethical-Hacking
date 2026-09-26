@@ -1,0 +1,13 @@
+{
+  "id": "backup-file-exposure",
+  "info": {"name": "Exposed backup / dump file", "severity": "high"},
+  "requests": [{
+    "method": "GET",
+    "path": ["/backup.zip", "/backup.sql", "/database.sql", "/dump.sql", "/backup.tar.gz", "/www.zip", "/site.zip"],
+    "matchers-condition": "and",
+    "matchers": [
+      {"type": "status", "status": [200]},
+      {"type": "regex", "part": "header", "regex": ["application/(zip|x-gzip|octet-stream|sql)", "attachment"], "condition": "or"}
+    ]
+  }]
+}

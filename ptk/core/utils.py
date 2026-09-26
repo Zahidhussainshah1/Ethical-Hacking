@@ -1,9 +1,25 @@
 """Shared helpers: target parsing and validation."""
 
 import ipaddress
+import os
 import re
 import socket
 from urllib.parse import urlparse
+
+
+def read_list(arg):
+    """Return a list of targets from ``arg``.
+
+    If ``arg`` is a path to an existing file, read one target per line
+    (blank lines and #-comments skipped). Otherwise treat ``arg`` itself as a
+    single target.
+    """
+    if not arg:
+        return []
+    if os.path.isfile(arg):
+        with open(arg, "r", encoding="utf-8", errors="ignore") as fh:
+            return [ln.strip() for ln in fh if ln.strip() and not ln.startswith("#")]
+    return [arg]
 
 _HOSTNAME_RE = re.compile(
     r"^(?=.{1,253}$)(?!-)[A-Za-z0-9-]{1,63}(?<!-)"

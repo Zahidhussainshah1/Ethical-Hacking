@@ -148,8 +148,8 @@ def interactive(logger):
         ns = _collect_interactive(cmd)
         if ns is None:
             continue
-        if getattr(ns, "target", None) and not utils.is_valid_host(
-                utils.normalize_host(ns.target)):
+        if (cmd.validate_target and getattr(ns, "target", None)
+                and not utils.is_valid_host(utils.normalize_host(ns.target))):
             print(colors.err(f"Invalid target: {ns.target}"))
             continue
         try:
@@ -173,8 +173,8 @@ def main(argv=None):
         return 0
 
     cmd = BY_NAME[args.command]
-    if getattr(args, "target", None) and not utils.is_valid_host(
-            utils.normalize_host(args.target)):
+    if (cmd.validate_target and getattr(args, "target", None)
+            and not utils.is_valid_host(utils.normalize_host(args.target))):
         print(colors.err(f"Invalid target: {args.target}"))
         return 2
 

@@ -1,0 +1,13 @@
+{
+  "id": "spring-actuator-env",
+  "info": {"name": "Exposed Spring Boot Actuator", "severity": "medium"},
+  "requests": [{
+    "method": "GET",
+    "path": ["/actuator", "/actuator/env", "/actuator/health", "/env", "/health"],
+    "matchers-condition": "and",
+    "matchers": [
+      {"type": "status", "status": [200]},
+      {"type": "word", "part": "body", "words": ["\"_links\"", "\"activeProfiles\"", "\"status\":\"UP\"", "propertySources"], "condition": "or"}
+    ]
+  }]
+}

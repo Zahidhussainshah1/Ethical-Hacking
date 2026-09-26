@@ -1,0 +1,13 @@
+{
+  "id": "phpinfo-exposure",
+  "info": {"name": "Exposed phpinfo() page", "severity": "low"},
+  "requests": [{
+    "method": "GET",
+    "path": ["/phpinfo.php", "/info.php", "/php_info.php", "/test.php"],
+    "matchers-condition": "and",
+    "matchers": [
+      {"type": "status", "status": [200]},
+      {"type": "word", "part": "body", "words": ["PHP Version", "phpinfo()"], "condition": "or"}
+    ]
+  }]
+}

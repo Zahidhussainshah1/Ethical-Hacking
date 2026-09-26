@@ -10,11 +10,12 @@ from typing import Callable, List, Optional
 
 from .core import utils
 from .modules import (
-    banner_grab, cors_check, crtsh, dir_enum, dns_recon, dork, encoder,
-    hashcrack, hashgen, hashid, host_discovery, http_headers, http_methods,
-    ip_geo, jwt_tool, netinfo, port_scan, pwcheck, report, reverse_dns,
-    robots_sitemap, spider, subdomain_enum, subnet, tls_info, waf_detect,
-    wayback, web_tech, whois_lookup, wordlist_gen, zone_transfer,
+    banner_grab, cors_check, crtsh, dir_enum, dns_recon, dork, encoder, fuzz,
+    gfscan, hashcrack, hashgen, hashid, host_discovery, http_headers,
+    http_methods, ip_geo, jwt_tool, netinfo, port_scan, probe, pwcheck, report,
+    reverse_dns, robots_sitemap, spider, subdomain_enum, subnet, templscan,
+    tls_info, unfurl, waf_detect, wayback, web_tech, whois_lookup, wordlist_gen,
+    zone_transfer,
 )
 
 
@@ -37,6 +38,9 @@ class Command:
     run: Callable
     active: bool = False
     args: List[Arg] = field(default_factory=list)
+    # When False, the framework skips hostname validation of the `target` arg
+    # (e.g. inputs that are a file of targets or a URL containing FUZZ).
+    validate_target: bool = True
 
 
 # --------------------------------------------------------------------------- #
@@ -186,6 +190,33 @@ def _pwcheck(a, log):
     pwcheck.run(a.password, logger=log)
 
 
+def _probe(a, log):
+    log.record("probe", a.target, probe.run(a.target, timeout=a.timeout,
+                                             workers=a.workers, logger=log))
+
+
+def _templscan(a, log):
+    log.record("templscan", a.target,
+               templscan.run(a.target, templates_dir=a.templates,
+                             timeout=a.timeout, logger=log))
+
+
+def _fuzz(a, log):
+    mc = [int(x) for x in str(a.match).split(",") if x.strip()] if a.match else None
+    fl = int(a.filter_len) if a.filter_len else None
+    log.record("fuzz", a.target,
+               fuzz.run(a.target, a.wordlist, timeout=a.timeout, workers=a.workers,
+                        match_codes=mc, filter_len=fl, logger=log))
+
+
+def _unfurl(a, log):
+    log.record("unfurl", a.mode, unfurl.run(a.source, mode=a.mode, logger=log))
+
+
+def _gfscan(a, log):
+    gfscan.run(a.source, vuln_class=a.vuln_class, logger=log)
+
+
 # --------------------------------------------------------------------------- #
 # Common argument builders
 # --------------------------------------------------------------------------- #
@@ -296,6 +327,35 @@ COMMANDS = [
                       prompt="Wordlist path"),
                   Arg("algo", "-a/--algo", "force algo (md5/sha1/sha256/...)",
                       prompt="Algo (blank=auto)")]),
+
+    # -- Bug Bounty --------------------------------------------------------
+    Command("probe", "Bug Bounty", "httpx-style HTTP prober (host/URL or file)", _probe,
+            active=True, validate_target=False,
+            args=[_target("Target host/URL or file"), _timeout(8.0), _workers(40)]),
+    Command("templscan", "Bug Bounty", "nuclei-style JSON template scanner", _templscan,
+            active=True,
+            args=[_target("Host or URL"),
+                  Arg("templates", "-T/--templates", "extra templates dir",
+                      prompt="Extra templates dir (blank=built-in)"),
+                  _timeout(8.0)]),
+    Command("fuzz", "Bug Bounty", "ffuf-style FUZZ-keyword fuzzer", _fuzz,
+            active=True, validate_target=False,
+            args=[_target("URL with FUZZ keyword"),
+                  Arg("wordlist", "-W/--wordlist", "wordlist path", required=True,
+                      prompt="Wordlist path"),
+                  Arg("match", "-mc/--match-codes", "only these status codes (e.g. 200,301)",
+                      prompt="Match codes (blank=hide 404)"),
+                  Arg("filter_len", "-fl/--filter-length", "hide this content length", int),
+                  _timeout(6.0), _workers(30)]),
+    Command("unfurl", "Bug Bounty", "Extract domains/paths/params from URLs", _unfurl,
+            args=[Arg("source", None, "URL or file of URLs", prompt="URL or file"),
+                  Arg("mode", "-m/--mode", "domains|apexes|paths|params|keys|values",
+                      default="domains", prompt="Mode (blank=domains)")]),
+    Command("gfscan", "Bug Bounty", "Flag URLs with vuln-prone params (triage)", _gfscan,
+            args=[Arg("source", None, "URL or file of URLs", prompt="URL or file"),
+                  Arg("vuln_class", "-c/--class",
+                      "all|redirect|ssrf|lfi|sqli|xss|ssti|idor", default="all",
+                      prompt="Class (blank=all)")]),
 
     # -- Reporting ---------------------------------------------------------
     Command("report", "Reporting", "Export Markdown report from session results", _report,

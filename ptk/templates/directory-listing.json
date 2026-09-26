@@ -1,0 +1,13 @@
+{
+  "id": "directory-listing",
+  "info": {"name": "Directory listing enabled", "severity": "low"},
+  "requests": [{
+    "method": "GET",
+    "path": ["/", "/uploads/", "/files/", "/backup/", "/images/"],
+    "matchers-condition": "and",
+    "matchers": [
+      {"type": "status", "status": [200]},
+      {"type": "word", "part": "body", "words": ["Index of /", "<title>Index of", "Directory listing for"], "condition": "or"}
+    ]
+  }]
+}

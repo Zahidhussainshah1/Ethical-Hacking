@@ -1,0 +1,13 @@
+{
+  "id": "swagger-ui-exposure",
+  "info": {"name": "Exposed Swagger / OpenAPI UI", "severity": "info"},
+  "requests": [{
+    "method": "GET",
+    "path": ["/swagger-ui.html", "/swagger/index.html", "/api-docs", "/openapi.json", "/swagger.json"],
+    "matchers-condition": "and",
+    "matchers": [
+      {"type": "status", "status": [200]},
+      {"type": "word", "part": "response", "words": ["swagger", "openapi", "Swagger UI"], "condition": "or"}
+    ]
+  }]
+}

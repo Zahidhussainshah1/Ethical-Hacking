@@ -1,0 +1,13 @@
+{
+  "id": "ds-store-exposure",
+  "info": {"name": "Exposed .DS_Store file", "severity": "low"},
+  "requests": [{
+    "method": "GET",
+    "path": ["/.DS_Store"],
+    "matchers-condition": "and",
+    "matchers": [
+      {"type": "status", "status": [200]},
+      {"type": "word", "part": "body", "words": ["Bud1"], "condition": "or"}
+    ]
+  }]
+}

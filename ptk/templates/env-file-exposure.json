@@ -1,0 +1,13 @@
+{
+  "id": "env-file-exposure",
+  "info": {"name": "Exposed .env file", "severity": "high"},
+  "requests": [{
+    "method": "GET",
+    "path": ["/.env", "/.env.local", "/.env.production"],
+    "matchers-condition": "and",
+    "matchers": [
+      {"type": "status", "status": [200]},
+      {"type": "regex", "part": "body", "regex": ["(?m)^[A-Z0-9_]+=", "APP_KEY|DB_PASSWORD|SECRET|API_KEY"], "condition": "or"}
+    ]
+  }]
+}
