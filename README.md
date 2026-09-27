@@ -10,7 +10,7 @@
 
 > **PTK** is an open-source **penetration testing and reconnaissance toolkit for
 > Termux** — a mobile-first, no-root **ethical hacking tool** that runs on
-> Android, Linux, and macOS. It bundles **36 security tools** (port scanner,
+> Android, Linux, and macOS. It bundles **37 security tools** (port scanner,
 > subdomain enumeration, DNS recon, WHOIS, TLS/SSL inspector, web technology
 > fingerprinting, directory brute-forcing, WAF detection, OSINT, hashing, and
 > more) behind a single CLI with an interactive menu, an authorization gate, and
@@ -29,6 +29,22 @@ Every tool is **unprivileged** — no root required — so the whole kit runs on
 stock Termux install (or any Linux/macOS shell). Run `python ptk.py list` to see
 all commands, or `python ptk.py` for the interactive menu.
 
+### ⚡ One-command recon (mobile-friendly)
+
+Typing a six-command recon chain on a phone keyboard is painful, so PTK bundles
+it into a single **`workflow`** command that saves organized, **resumable**
+output into a per-target workspace and writes a report:
+
+```bash
+python ptk.py workflow example.com
+# → subdomains (DNS + crt.sh) → live-host probe → template scan → report.md
+# saved under ~/.ptk/ws/example.com/  (re-run to resume; --fresh to redo)
+```
+
+Add `--dirs` to also run content discovery, `-n` to change how many hosts get
+deep-scanned. Everything lands in the workspace:
+`subdomains.txt`, `live.txt`, `findings.json`, `report.md`.
+
 ## Table of contents
 
 - [Features](#features) · [Install (Termux)](#install-termux) · [Usage](#usage)
@@ -37,6 +53,12 @@ all commands, or `python ptk.py` for the interactive menu.
 - [Branding](#branding) · [License](#license)
 
 ## Features
+
+**Workflow**
+
+| Command    | What it does                                                       | Type   |
+|------------|--------------------------------------------------------------------|--------|
+| `workflow` | One-command recon pipeline → saved, resumable per-target workspace | active |
 
 **Network**
 
@@ -249,8 +271,10 @@ ptk/
     hashid.py  hashgen.py  encoder.py  jwt_tool.py  wordlist_gen.py
     subnet.py  pwcheck.py  hashcrack.py
     probe.py  templscan.py  fuzz.py  unfurl.py  gfscan.py   # bug bounty
+    workflow.py                                             # recon pipeline
     report.py
   core/brand.py            # centralized BitCops / bitcops.net branding
+  core/workspace.py        # per-target workspace storage (~/.ptk/ws/<target>/)
   templates/               # JSON detection templates for `templscan`
 install.sh                 # Termux installer
 ```

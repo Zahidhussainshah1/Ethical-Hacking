@@ -15,7 +15,7 @@ from .modules import (
     http_methods, ip_geo, jwt_tool, netinfo, port_scan, probe, pwcheck, report,
     reverse_dns, robots_sitemap, spider, subdomain_enum, subnet, templscan,
     tls_info, unfurl, waf_detect, wayback, web_tech, whois_lookup, wordlist_gen,
-    zone_transfer,
+    workflow, zone_transfer,
 )
 
 
@@ -217,6 +217,11 @@ def _gfscan(a, log):
     gfscan.run(a.source, vuln_class=a.vuln_class, logger=log)
 
 
+def _workflow(a, log):
+    workflow.run(a.target, workers=a.workers, timeout=a.timeout, fresh=a.fresh,
+                 do_dirs=a.dirs, max_hosts=a.max_hosts, logger=log)
+
+
 # --------------------------------------------------------------------------- #
 # Common argument builders
 # --------------------------------------------------------------------------- #
@@ -238,6 +243,17 @@ def _workers(default):
 # --------------------------------------------------------------------------- #
 
 COMMANDS = [
+    # -- Workflow ----------------------------------------------------------
+    Command("workflow", "Workflow",
+            "One-command recon pipeline into a saved workspace", _workflow,
+            active=True,
+            args=[_target("Domain"),
+                  Arg("max_hosts", "-n/--max-hosts", "hosts to deep-scan", int, 10),
+                  Arg("dirs", "--dirs", "also run content discovery", bool, False,
+                      prompt="Run content discovery too? (y/N)"),
+                  Arg("fresh", "--fresh", "ignore cached workspace results", bool, False),
+                  _timeout(8.0), _workers(40)]),
+
     # -- Network -----------------------------------------------------------
     Command("discover", "Network", "TCP host discovery (ping sweep)", _discover, active=True,
             args=[_target("Target host or CIDR"), _timeout(0.5), _workers(100)]),
