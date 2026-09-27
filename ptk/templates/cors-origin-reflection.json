@@ -1,0 +1,13 @@
+{
+  "id": "cors-origin-reflection",
+  "info": {"name": "CORS reflects arbitrary Origin", "severity": "medium"},
+  "requests": [{
+    "method": "GET",
+    "path": ["/", "/api", "/api/"],
+    "headers": {"Origin": "https://ptk-cors-test.example.com"},
+    "matchers-condition": "and",
+    "matchers": [
+      {"type": "word", "part": "header", "words": ["ptk-cors-test.example.com"], "condition": "or"}
+    ]
+  }]
+}

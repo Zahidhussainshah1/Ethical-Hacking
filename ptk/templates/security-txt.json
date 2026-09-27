@@ -1,0 +1,13 @@
+{
+  "id": "security-txt",
+  "info": {"name": "security.txt present", "severity": "info"},
+  "requests": [{
+    "method": "GET",
+    "path": ["/.well-known/security.txt", "/security.txt"],
+    "matchers-condition": "and",
+    "matchers": [
+      {"type": "status", "status": [200]},
+      {"type": "word", "part": "body", "words": ["Contact:", "Policy:", "Expires:"], "condition": "or"}
+    ]
+  }]
+}

@@ -13,9 +13,9 @@ from .modules import (
     banner_grab, cors_check, crtsh, dir_enum, dns_recon, dork, encoder, fuzz,
     gfscan, hashcrack, hashgen, hashid, host_discovery, http_headers,
     http_methods, ip_geo, jwt_tool, netinfo, port_scan, probe, pwcheck, report,
-    reverse_dns, robots_sitemap, spider, subdomain_enum, subnet, templscan,
-    tls_info, unfurl, waf_detect, wayback, web_tech, whois_lookup, wordlist_gen,
-    workflow, zone_transfer,
+    reverse_dns, robots_sitemap, spider, subdomain_enum, subnet, templates_cmd,
+    templscan, tls_info, unfurl, waf_detect, wayback, web_tech, whois_lookup,
+    wordlist_gen, workflow, zone_transfer,
 )
 
 
@@ -222,6 +222,10 @@ def _workflow(a, log):
                  do_dirs=a.dirs, max_hosts=a.max_hosts, logger=log)
 
 
+def _templates(a, log):
+    templates_cmd.run(a.action, arg=a.arg, logger=log)
+
+
 # --------------------------------------------------------------------------- #
 # Common argument builders
 # --------------------------------------------------------------------------- #
@@ -372,6 +376,12 @@ COMMANDS = [
                   Arg("vuln_class", "-c/--class",
                       "all|redirect|ssrf|lfi|sqli|xss|ssti|idor", default="all",
                       prompt="Class (blank=all)")]),
+    Command("templates", "Bug Bounty",
+            "Manage templscan templates (list/where/new/validate)", _templates,
+            args=[Arg("action", None, "list | where | new | validate",
+                      default="list", prompt="Action (list/where/new/validate)"),
+                  Arg("arg", None, "id for 'new', file path for 'validate'",
+                      default="", prompt="Name/file (blank if not needed)")]),
 
     # -- Reporting ---------------------------------------------------------
     Command("report", "Reporting", "Export Markdown report from session results", _report,

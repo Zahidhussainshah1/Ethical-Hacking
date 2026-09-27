@@ -1,0 +1,13 @@
+{
+  "id": "apache-server-status",
+  "info": {"name": "Exposed Apache server-status / server-info", "severity": "medium"},
+  "requests": [{
+    "method": "GET",
+    "path": ["/server-status", "/server-info"],
+    "matchers-condition": "and",
+    "matchers": [
+      {"type": "status", "status": [200]},
+      {"type": "word", "part": "body", "words": ["Apache Server Status", "Apache Server Information", "Server Version:"], "condition": "or"}
+    ]
+  }]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "config-backup-exposure",
+  "info": {"name": "Exposed config / backup file", "severity": "high"},
+  "requests": [{
+    "method": "GET",
+    "path": ["/web.config", "/config.php.bak", "/config.php~", "/.env.bak", "/configuration.php~", "/settings.py.bak", "/wp-config.php.bak"],
+    "matchers-condition": "and",
+    "matchers": [
+      {"type": "status", "status": [200]},
+      {"type": "regex", "part": "body", "regex": ["<configuration|connectionStrings", "DB_PASSWORD|password|SECRET_KEY|define\\('DB_"], "condition": "or"}
+    ]
+  }]
+}

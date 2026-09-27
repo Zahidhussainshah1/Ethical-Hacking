@@ -1,0 +1,13 @@
+{
+  "id": "svn-entries-exposure",
+  "info": {"name": "Exposed .svn repository", "severity": "medium"},
+  "requests": [{
+    "method": "GET",
+    "path": ["/.svn/entries", "/.svn/wc.db"],
+    "matchers-condition": "and",
+    "matchers": [
+      {"type": "status", "status": [200]},
+      {"type": "regex", "part": "body", "regex": ["^\\d+", "svn|SQLite format"], "condition": "or"}
+    ]
+  }]
+}

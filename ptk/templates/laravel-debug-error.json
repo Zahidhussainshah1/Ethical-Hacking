@@ -1,0 +1,12 @@
+{
+  "id": "laravel-debug-error",
+  "info": {"name": "Laravel debug mode / stack trace exposed", "severity": "medium"},
+  "requests": [{
+    "method": "GET",
+    "path": ["/", "/%80", "/index.php?x[]=1"],
+    "matchers-condition": "and",
+    "matchers": [
+      {"type": "word", "part": "body", "words": ["Whoops, looks like something went wrong", "Illuminate\\", "vendor/laravel", "APP_DEBUG"], "condition": "or"}
+    ]
+  }]
+}

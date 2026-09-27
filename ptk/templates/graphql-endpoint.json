@@ -1,0 +1,12 @@
+{
+  "id": "graphql-endpoint",
+  "info": {"name": "GraphQL endpoint exposed", "severity": "info"},
+  "requests": [{
+    "method": "GET",
+    "path": ["/graphql", "/graphiql", "/api/graphql", "/v1/graphql"],
+    "matchers-condition": "and",
+    "matchers": [
+      {"type": "word", "part": "response", "words": ["GraphQL", "graphiql", "\"data\"", "must provide query string"], "condition": "or"}
+    ]
+  }]
+}

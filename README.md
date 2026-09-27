@@ -10,7 +10,7 @@
 
 > **PTK** is an open-source **penetration testing and reconnaissance toolkit for
 > Termux** — a mobile-first, no-root **ethical hacking tool** that runs on
-> Android, Linux, and macOS. It bundles **37 security tools** (port scanner,
+> Android, Linux, and macOS. It bundles **38 security tools** (port scanner,
 > subdomain enumeration, DNS recon, WHOIS, TLS/SSL inspector, web technology
 > fingerprinting, directory brute-forcing, WAF detection, OSINT, hashing, and
 > more) behind a single CLI with an interactive menu, an authorization gate, and
@@ -124,12 +124,30 @@ deep-scanned. Everything lands in the workspace:
 | `fuzz`      | `FUZZ`-keyword fuzzer with status/length filters          | ffuf / gobuster |
 | `unfurl`    | Extract domains/apexes/paths/params/keys from URL lists   | unfurl |
 | `gfscan`    | Flag URLs with vuln-prone params for triage               | gf |
+| `templates` | List / scaffold / validate `templscan` templates          | nuclei -t |
 
 > These are **original Python implementations** written for Termux — not
 > wrappers around the Go binaries — so they need no Go toolchain and no root.
 > `probe`/`fuzz`/`templscan` are *detection/recon* tools; `templscan` ships
 > detection templates only (exposed `.git`, `.env`, backups, actuator, etc.)
 > and no exploitation templates.
+
+> ### 📝 Note: custom templates (bring your own)
+> `templscan` ships **16+ built-in detection templates**, and **anyone can add
+> their own** — no laptop needed. Custom templates are plain JSON files in
+> `~/.ptk/templates/` and are **auto-loaded** on every scan. Build and manage
+> them right on your phone:
+>
+> ```bash
+> python ptk.py templates new my-check      # scaffold ~/.ptk/templates/my-check.json
+> nano ~/.ptk/templates/my-check.json       # edit paths + matchers
+> python ptk.py templates validate ~/.ptk/templates/my-check.json
+> python ptk.py templscan https://target    # your template now runs automatically
+> ```
+>
+> The JSON format (status / word / regex matchers, custom headers, severities)
+> is documented in [`ptk/templates/README.md`](ptk/templates/README.md). Point
+> at an alternate folder with `PTK_TEMPLATES_DIR` or `templscan -T <dir>`.
 
 **Reporting**
 
@@ -270,12 +288,12 @@ ptk/
     crtsh.py  wayback.py  ip_geo.py  dork.py
     hashid.py  hashgen.py  encoder.py  jwt_tool.py  wordlist_gen.py
     subnet.py  pwcheck.py  hashcrack.py
-    probe.py  templscan.py  fuzz.py  unfurl.py  gfscan.py   # bug bounty
+    probe.py  templscan.py  fuzz.py  unfurl.py  gfscan.py  templates_cmd.py  # bug bounty
     workflow.py                                             # recon pipeline
     report.py
   core/brand.py            # centralized BitCops / bitcops.net branding
   core/workspace.py        # per-target workspace storage (~/.ptk/ws/<target>/)
-  templates/               # JSON detection templates for `templscan`
+  templates/               # JSON detection templates (+ your ~/.ptk/templates/)
 install.sh                 # Termux installer
 ```
 

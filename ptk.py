@@ -39,7 +39,10 @@ def build_parser():
         sp = sub.add_parser(cmd.name, help=cmd.help)
         for arg in cmd.args:
             if arg.flag is None:
-                sp.add_argument(arg.name, help=arg.help)
+                if arg.default is not None and not arg.required:
+                    sp.add_argument(arg.name, nargs="?", default=arg.default, help=arg.help)
+                else:
+                    sp.add_argument(arg.name, help=arg.help)
             elif arg.type is bool:
                 sp.add_argument(*_split_flag(arg.flag), dest=arg.name,
                                 action="store_true", help=arg.help)
@@ -95,7 +98,9 @@ def _collect_interactive(cmd):
         if raw is None:
             return None
         if raw == "":
-            if arg.flag is None or arg.required:
+            # Blank is only allowed when the arg is optional: either a flag, or
+            # a positional that carries a default (e.g. templates -> "list").
+            if arg.required or (arg.flag is None and arg.default is None):
                 print(colors.err(f"  {arg.name} is required."))
                 return None
             values[arg.name] = arg.default
